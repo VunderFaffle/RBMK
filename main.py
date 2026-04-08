@@ -39,6 +39,8 @@ def handle_client(conn):
                 line, buffer = buffer.split("\n", 1)
 
                 try:
+                    line = line.replace("=", ":")
+                    line = line.replace("{", '{"').replace(",", ',"').replace(":", '":')
                     json_data = json.loads(line)
                     socketio.emit("update", json_data)
                 except:
