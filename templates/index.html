@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Realtime</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            background-color: black;
+            color: #00FF00; /* CMD green */
+            font-family: monospace;
+        }
+
+        #data {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Realtime Data</h1>
+<div id="data">Waiting...</div>
+
+<script>
+    const socket = io();
+
+    socket.on("update", function(data) {
+        document.getElementById("data").innerText = data.value;
+    });
+</script>
+
+</body>
+</html>
