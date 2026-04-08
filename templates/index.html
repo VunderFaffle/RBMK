@@ -1,30 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Realtime</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
         body {
-            background-color: black;
-            color: #00FF00; /* CMD green */
+            background: black;
+            color: #00FF00;
             font-family: monospace;
         }
-
-        #data {
-            font-size: 24px;
-        }
+        a { color: #00FF00; }
     </style>
 </head>
 <body>
 
-<h1>Realtime Data</h1>
+<h1>Главная</h1>
+
+<a href="/log">Перейти в лог →</a>
+
 <div id="data">Waiting...</div>
 
 <script>
     const socket = io();
 
-    socket.on("update", function(data) {
-        document.getElementById("data").innerText = data.value;
+    socket.on("update", (data) => {
+        document.getElementById("data").innerText = JSON.stringify(data);
     });
 </script>
 

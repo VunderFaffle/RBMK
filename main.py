@@ -2,6 +2,7 @@ from flask import Flask, render_template
 from flask_socketio import SocketIO
 import socket
 import threading
+import json
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -15,36 +16,47 @@ def tcp_server():
     server.bind((HOST, PORT))
     server.listen()
 
-    print(f"TCP сервер запущен на {PORT}")
+    print("TCP сервер запущен")
 
     while True:
         conn, addr = server.accept()
-        print(f"Подключение: {addr}")
-
-        threading.Thread(target=handle_client, args=(conn,)).start()
+        print("Подключился:", addr)
+        threading.Thread(target=handle_client, args=(conn,), daemon=True).start()
 
 def handle_client(conn):
+    buffer = ""
+
     while True:
         try:
             data = conn.recv(1024)
             if not data:
                 break
 
-            message = data.decode().strip()
-            print("Получено:", message)
+            buffer += data.decode()
 
-            # отправляем в браузер
-            socketio.emit("update", {"value": message})
+            # разбиваем по строкам (JSON\n)
+            while "\n" in buffer:
+                line, buffer = buffer.split("\n", 1)
+
+                try:
+                    json_data = json.loads(line)
+                    socketio.emit("update", json_data)
+                except:
+                    print("Кривой JSON:", line)
 
         except:
             break
 
     conn.close()
 
-# --- Web ---
+# --- WEB ---
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/log")
+def log():
+    return render_template("log.html")
 
 if __name__ == "__main__":
     threading.Thread(target=tcp_server, daemon=True).start()

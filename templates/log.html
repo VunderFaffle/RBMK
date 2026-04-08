@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+    <style>
+        body {
+            background: black;
+            color: #00FF00;
+            font-family: monospace;
+        }
+        a { color: #00FF00; }
+
+        #log {
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Лог</h1>
+
+<a href="/">← Назад</a>
+
+<div id="log"></div>
+
+<script>
+    const socket = io();
+    const log = document.getElementById("log");
+
+    socket.on("update", (data) => {
+        const line = document.createElement("div");
+        line.innerText = JSON.stringify(data);
+
+        log.appendChild(line);
+
+        // автоскролл вниз
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+</script>
+
+</body>
+</html>
