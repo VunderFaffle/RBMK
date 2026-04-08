@@ -45,7 +45,7 @@
     <a href="/log">Log →</a>
     <div>REACTOR HULL TEMPERATURE: <span id="HULL_TEMP">-</span></div>
     <div>REACTOR CORE TEMPERATURE: <span id="CORE_TEMP">-</span></div>
-    <div>REACTOR FUEL DEPLETION: <span id="FUEL_DEPLETION">-</span></div>
+    <div>REACTOR CONTROL ROD POSITION: <span id="CONTROL_LEVEL">-</span></div>
 </div>
 
 <div id="ascii-panel">
@@ -129,8 +129,8 @@ $$ |                                                                            
         if (data.CORE_TEMP !== undefined)
             document.getElementById("CORE_TEMP").innerText = data.CORE_TEMP;
 
-        if (data.FUEL_DEPLETION !== undefined)
-            document.getElementById("FUEL_DEPLETION").innerText = data.FUEL_DEPLETION;
+        if (data.CONTROL_LEVEL !== undefined)
+            document.getElementById("CONTROL_LEVEL").innerText = data.CONTROL_LEVEL;
     });
 </script>
 

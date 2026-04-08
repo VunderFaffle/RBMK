@@ -46,7 +46,7 @@ def handle_client(conn):
                     state_data = {
                         "HULL_TEMP": json_data.get("HULL_TEMP"),
                         "CORE_TEMP": json_data.get("CORE_TEMP"),
-                        "FUEL_DEPLETION": json_data.get("FUEL_DEPLETION")
+                        "CONTROL_LEVEL": json_data.get("CONTROL_LEVEL")
                     }
 
                     socketio.emit("update", state_data)
