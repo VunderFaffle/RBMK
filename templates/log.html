@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Log</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
         body {
@@ -17,7 +18,7 @@
 </head>
 <body>
 
-<h1>Лог</h1>
+<h1>Movement Log</h1>
 
 <a href="/">← Назад</a>
 
@@ -27,13 +28,14 @@
     const socket = io();
     const log = document.getElementById("log");
 
-    socket.on("update", (data) => {
+    socket.on("log", (data) => {
+        if (!data.MOVEMENT) return;
+
         const line = document.createElement("div");
-        line.innerText = JSON.stringify(data);
+        line.innerText = "MOVEMENT: " + data.MOVEMENT;
 
         log.appendChild(line);
 
-        // автоскролл вниз
         window.scrollTo(0, document.body.scrollHeight);
     });
 </script>

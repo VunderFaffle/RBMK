@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Main</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
         body {
@@ -13,17 +14,26 @@
 </head>
 <body>
 
-<h1>Главная</h1>
+<h1>System State</h1>
 
 <a href="/log">Перейти в лог →</a>
 
-<div id="data">Waiting...</div>
+<div>HULL_TEMP: <span id="HULL_TEMP">-</span></div>
+<div>CORE_TEMP: <span id="CORE_TEMP">-</span></div>
+<div>FUEL_DEPLETION: <span id="FUEL_DEPLETION">-</span></div>
 
 <script>
     const socket = io();
 
     socket.on("update", (data) => {
-        document.getElementById("data").innerText = JSON.stringify(data);
+        if (data.HULL_TEMP !== undefined)
+            document.getElementById("HULL_TEMP").innerText = data.HULL_TEMP;
+
+        if (data.CORE_TEMP !== undefined)
+            document.getElementById("CORE_TEMP").innerText = data.CORE_TEMP;
+
+        if (data.FUEL_DEPLETION !== undefined)
+            document.getElementById("FUEL_DEPLETION").innerText = data.FUEL_DEPLETION;
     });
 </script>
 

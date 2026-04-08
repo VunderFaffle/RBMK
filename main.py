@@ -34,7 +34,6 @@ def handle_client(conn):
 
             buffer += data.decode()
 
-            # разбиваем по строкам (JSON\n)
             while "\n" in buffer:
                 line, buffer = buffer.split("\n", 1)
 
@@ -42,9 +41,24 @@ def handle_client(conn):
                     line = line.replace("=", ":")
                     line = line.replace("{", '{"').replace(",", ',"').replace(":", '":')
                     json_data = json.loads(line)
-                    socketio.emit("update", json_data)
-                except:
-                    print("Кривой JSON:", line)
+
+                    # 🔹 отправляем обновления на главную
+                    state_data = {
+                        "HULL_TEMP": json_data.get("HULL_TEMP"),
+                        "CORE_TEMP": json_data.get("CORE_TEMP"),
+                        "FUEL_DEPLETION": json_data.get("FUEL_DEPLETION")
+                    }
+
+                    socketio.emit("update", state_data)
+
+                    # 🔹 если есть движение — отправляем в лог
+                    if "MOVEMENT" in json_data:
+                        socketio.emit("log", {
+                            "MOVEMENT": json_data["MOVEMENT"]
+                        })
+
+                except Exception as e:
+                    print("Кривой JSON:", line, e)
 
         except:
             break
