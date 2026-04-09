@@ -102,25 +102,13 @@
         }
     });
 
-    // мигание
+    // мигание раз в секунду
     setInterval(() => {
         if (emergencyActive) {
             blinkState = !blinkState;
-
-            // фон + текст
-            body.classList.add("emergency");
-            body.classList.toggle("flash", blinkState);
-
-            // картинка
             emergencyImg.style.display = blinkState ? "block" : "none";
-
-            // ASCII
-            ascii.innerText = blinkState ? emergencyArt : normalArt;
-
         } else {
-            body.classList.remove("emergency", "flash");
             emergencyImg.style.display = "none";
-            ascii.innerText = normalArt;
         }
     }, 1000);
 </script>
