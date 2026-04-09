@@ -45,7 +45,7 @@
 
     <div>HULL TEMP: <span id="HULL_TEMP">-</span></div>
     <div>CORE TEMP: <span id="CORE_TEMP">-</span></div>
-    <div>CONTROL ROD LEVEL: <span id="CONTROL_ROD_LEVEL">-</span></div>
+    <div>CONTROL ROD LEVEL: <span id="CONTROL_LEVEL">-</span></div>
     <div>REACTOR UPTIME: <span id="REACTOR_UPTIME">-</span></div>
     <div>WATER LEVEL: <span id="WATER_LEVEL">-</span></div>
     <div>XENON: <span id="XENON">-</span></div>
@@ -141,7 +141,7 @@ $$ |                                                                            
             document.getElementById("CORE_TEMP").innerText = data["CORE TEMP"];
 
         if (data["CONTROL ROD LEVEL"] !== undefined)
-            document.getElementById("CONTROL_ROD_LEVEL").innerText = data["CONTROL ROD LEVEL"];
+            document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL ROD LEVEL"];
 
         if (data["REACTOR UPTIME"] !== undefined)
             document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR UPTIME"];

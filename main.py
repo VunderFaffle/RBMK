@@ -51,11 +51,11 @@ def handle_client(conn):
                     state_data = {}
 
                     fields = [
-                        "HULL TEMP",
-                        "CORE TEMP",
-                        "CONTROL ROD LEVEL",
-                        "REACTOR UPTIME",
-                        "WATER LEVEL",
+                        "HULL_TEMP",
+                        "CORE_TEMP",
+                        "CONTROL_LEVEL",
+                        "REACTOR_UPTIME",
+                        "WATER_LEVEL",
                         "XENON",
                         "EMERGENCY"
                     ]
@@ -100,7 +100,6 @@ def log():
 if __name__ == "__main__":
     threading.Thread(target=tcp_server, daemon=True).start()
     socketio.run(app, host="0.0.0.0", port=5000)
-    
     
 #line = line.replace("=", ":")
 #line = line.replace("{", '{"').replace(",", ',"').replace(":", '":')
