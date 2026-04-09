@@ -13,6 +13,17 @@
     height: 100vh;
 }
 
+/* аварийный режим */
+.emergency {
+    color: red;
+}
+
+/* мигание */
+.flash {
+    background: red;
+    color: black;
+}
+
         a { color: inherit; }
 
         #data-panel {
@@ -36,15 +47,7 @@
             z-index: 2000;
         }
 
-        /* аварийный режим */
-        .emergency {
-    color: red;
-}
 
-        .flash {
-    background: red;
-    color: black;
-}
     </style>
 </head>
 <body>
@@ -89,6 +92,7 @@
     const emergencyImg = document.getElementById("emergency");
     const ascii = document.getElementById("ascii");
 
+    // нормальный ASCII
     const normalArt = `
  /$$$$$$$  /$$$$$$$  /$$      /$$ /$$   /$$       /$$                                               /$$
 | $$__  $$| $$__  $$| $$$    /$$$| $$  /$$/      |__/                                              | $$
@@ -103,6 +107,7 @@
                                                                                                        
 `;
 
+    // аварийный ASCII
     const emergencyArt = `
  (            *         )                                    
  )\ )   (   (  `     ( /(                                    
@@ -116,32 +121,45 @@
 `;
 
     socket.on("update", (data) => {
-        console.log("DATA:", data);
+        if (data["HULL_TEMP"] !== undefined)
+            document.getElementById("HULL_TEMP").innerText = data["HULL_TEMP"];
 
-        if ("EMERGENCY" in data) {
-            emergencyActive = !!data["EMERGENCY"];
+        if (data["CORE_TEMP"] !== undefined)
+            document.getElementById("CORE_TEMP").innerText = data["CORE_TEMP"];
+
+        if (data["CONTROL_LEVEL"] !== undefined)
+            document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL_LEVEL"];
+
+        if (data["REACTOR_UPTIME"] !== undefined)
+            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR_UPTIME"];
+
+        if (data["WATER_LEVEL"] !== undefined)
+            document.getElementById("WATER_LEVEL").innerText = data["WATER_LEVEL"];
+
+        if (data["XENON"] !== undefined)
+            document.getElementById("XENON").innerText = data["XENON"];
+
+        if (data["EMERGENCY"] !== undefined) {
+            emergencyActive = data["EMERGENCY"];
         }
     });
 
+    // мигание
     setInterval(() => {
         if (emergencyActive) {
             blinkState = !blinkState;
 
-            // включаем режим аварии
+            // фон + текст
             body.classList.add("emergency");
+            body.classList.toggle("flash", blinkState);
 
-            if (blinkState) {
-                body.classList.add("flash");
-                emergencyImg.style.display = "block";
-                ascii.innerText = emergencyArt;
-            } else {
-                body.classList.remove("flash");
-                emergencyImg.style.display = "none";
-                ascii.innerText = normalArt;
-            }
+            // картинка
+            emergencyImg.style.display = blinkState ? "block" : "none";
+
+            // ASCII
+            ascii.innerText = blinkState ? emergencyArt : normalArt;
 
         } else {
-            // возвращаем всё назад
             body.classList.remove("emergency", "flash");
             emergencyImg.style.display = "none";
             ascii.innerText = normalArt;
