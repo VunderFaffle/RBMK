@@ -135,19 +135,19 @@ $$ |                                                                            
 
     socket.on("update", (data) => {
         if (data["HULL TEMP"] !== undefined)
-            document.getElementById("HULL_TEMP").innerText = data["HULL TEMP"];
+            document.getElementById("HULL_TEMP").innerText = data["HULL_TEMP"];
 
         if (data["CORE TEMP"] !== undefined)
-            document.getElementById("CORE_TEMP").innerText = data["CORE TEMP"];
+            document.getElementById("CORE_TEMP").innerText = data["CORE_TEMP"];
 
         if (data["CONTROL ROD LEVEL"] !== undefined)
-            document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL ROD LEVEL"];
+            document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL_LEVEL"];
 
         if (data["REACTOR UPTIME"] !== undefined)
-            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR UPTIME"];
+            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR_UPTIME"];
 
         if (data["WATER LEVEL"] !== undefined)
-            document.getElementById("WATER_LEVEL").innerText = data["WATER LEVEL"];
+            document.getElementById("WATER_LEVEL").innerText = data["WATER_LEVEL"];
 
         if (data["XENON"] !== undefined)
             document.getElementById("XENON").innerText = data["XENON"];
