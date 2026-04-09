@@ -16,12 +16,13 @@ def tcp_server():
     server.bind((HOST, PORT))
     server.listen()
 
-    print("TCP сервер запущен")
+    print("TCP сервер запущен на порту", PORT)
 
     while True:
         conn, addr = server.accept()
         print("Подключился:", addr)
         threading.Thread(target=handle_client, args=(conn,), daemon=True).start()
+
 
 def handle_client(conn):
     buffer = ""
@@ -36,34 +37,54 @@ def handle_client(conn):
 
             while "\n" in buffer:
                 line, buffer = buffer.split("\n", 1)
+                line = line.strip()
+
+                if not line:
+                    continue
 
                 try:
                     line = line.replace("=", ":")
                     line = line.replace("{", '{"').replace(",", ',"').replace(":", '":')
                     json_data = json.loads(line)
 
-                    # 🔹 отправляем обновления на главную
-                    state_data = {
-                        "HULL_TEMP": json_data.get("HULL_TEMP"),
-                        "CORE_TEMP": json_data.get("CORE_TEMP"),
-                        "CONTROL_LEVEL": json_data.get("CONTROL_LEVEL")
-                    }
+                    # --- формируем данные для главной ---
+                    state_data = {}
 
-                    socketio.emit("update", state_data)
+                    fields = [
+                        "HULL TEMP",
+                        "CORE TEMP",
+                        "CONTROL ROD LEVEL",
+                        "REACTOR UPTIME",
+                        "WATER LEVEL",
+                        "XENON",
+                        "EMERGENCY"
+                    ]
 
-                    # 🔹 если есть движение — отправляем в лог
+                    for field in fields:
+                        if field in json_data:
+                            state_data[field] = json_data[field]
+
+                    # отправляем на главную
+                    if state_data:
+                        socketio.emit("update", state_data)
+
+                    # --- лог (только MOVEMENT) ---
                     if "MOVEMENT" in json_data:
                         socketio.emit("log", {
                             "MOVEMENT": json_data["MOVEMENT"]
                         })
 
                 except Exception as e:
-                    print("Кривой JSON:", line, e)
+                    print("Кривой JSON:", line)
+                    print("Ошибка:", e)
 
-        except:
+        except Exception as e:
+            print("Ошибка соединения:", e)
             break
 
     conn.close()
+    print("Клиент отключился")
+
 
 # --- WEB ---
 @app.route("/")
@@ -74,6 +95,12 @@ def index():
 def log():
     return render_template("log.html")
 
+
+# --- запуск ---
 if __name__ == "__main__":
     threading.Thread(target=tcp_server, daemon=True).start()
     socketio.run(app, host="0.0.0.0", port=5000)
+    
+    
+#line = line.replace("=", ":")
+#line = line.replace("{", '{"').replace(",", ',"').replace(":", '":')

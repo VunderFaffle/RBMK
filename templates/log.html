@@ -8,19 +8,36 @@
             background: black;
             color: #00FF00;
             font-family: monospace;
+            margin: 0;
         }
+
         a { color: #00FF00; }
 
+        /* Верхняя панель */
+        #topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: black;
+            padding: 10px;
+            border-bottom: 1px solid #00FF00;
+            z-index: 1000;
+        }
+
+        /* Лог */
         #log {
-            white-space: pre-wrap;
+            margin-top: 60px;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
 
-<h1>Movement Log</h1>
-
-<a href="/">← Назад</a>
+<div id="topbar">
+    <h1 style="margin:0;">Movement Log</h1>
+    <a href="/">← Назад</a>
+</div>
 
 <div id="log"></div>
 

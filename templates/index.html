@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Main</title>
+    <title>Reactor</title>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <style>
         body {
@@ -9,43 +9,46 @@
             color: #00FF00;
             font-family: monospace;
             margin: 0;
-            padding: 0;
-            height: 100vh;
             display: flex;
-            flex-direction: row;
+            height: 100vh;
         }
+
         a { color: #00FF00; }
 
-        /* Левая панель: данные */
         #data-panel {
             width: 50%;
             padding: 20px;
-            box-sizing: border-box;
         }
 
-        /* Правая панель: ASCII арт */
         #ascii-panel {
             width: 50%;
             padding: 20px;
-            box-sizing: border-box;
             white-space: pre;
-            overflow-y: auto;
         }
 
-        /* Заголовки */
-        h1 {
-            margin-top: 0;
+        /* EMERGENCY картинка */
+        #emergency {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+            z-index: 2000;
         }
     </style>
 </head>
 <body>
 
 <div id="data-panel">
-    <h1>REACTOR</h1>
-    <a href="/log">Log →</a>
-    <div>REACTOR HULL TEMPERATURE: <span id="HULL_TEMP">-</span></div>
-    <div>REACTOR CORE TEMPERATURE: <span id="CORE_TEMP">-</span></div>
-    <div>REACTOR CONTROL ROD POSITION: <span id="CONTROL_LEVEL">-</span></div>
+    <h1>Reactor State</h1>
+    <a href="/log">Перейти в лог →</a>
+
+    <div>HULL TEMP: <span id="HULL_TEMP">-</span></div>
+    <div>CORE TEMP: <span id="CORE_TEMP">-</span></div>
+    <div>CONTROL ROD LEVEL: <span id="CONTROL_ROD_LEVEL">-</span></div>
+    <div>REACTOR UPTIME: <span id="REACTOR_UPTIME">-</span></div>
+    <div>WATER LEVEL: <span id="WATER_LEVEL">-</span></div>
+    <div>XENON: <span id="XENON">-</span></div>
 </div>
 
 <div id="ascii-panel">
@@ -119,19 +122,50 @@ $$ |                                                                            
 </pre>
 </div>
 
+<!-- аварийная картинка -->
+<img id="emergency" src="/static/emergency.png" width="450" height="130">
+
 <script>
     const socket = io();
 
+    let emergencyActive = false;
+    let blinkState = false;
+
+    const emergencyImg = document.getElementById("emergency");
+
     socket.on("update", (data) => {
-        if (data.HULL_TEMP !== undefined)
-            document.getElementById("HULL_TEMP").innerText = data.HULL_TEMP;
+        if (data["HULL TEMP"] !== undefined)
+            document.getElementById("HULL_TEMP").innerText = data["HULL TEMP"];
 
-        if (data.CORE_TEMP !== undefined)
-            document.getElementById("CORE_TEMP").innerText = data.CORE_TEMP;
+        if (data["CORE TEMP"] !== undefined)
+            document.getElementById("CORE_TEMP").innerText = data["CORE TEMP"];
 
-        if (data.CONTROL_LEVEL !== undefined)
-            document.getElementById("CONTROL_LEVEL").innerText = data.CONTROL_LEVEL;
+        if (data["CONTROL ROD LEVEL"] !== undefined)
+            document.getElementById("CONTROL_ROD_LEVEL").innerText = data["CONTROL ROD LEVEL"];
+
+        if (data["REACTOR UPTIME"] !== undefined)
+            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR UPTIME"];
+
+        if (data["WATER LEVEL"] !== undefined)
+            document.getElementById("WATER_LEVEL").innerText = data["WATER LEVEL"];
+
+        if (data["XENON"] !== undefined)
+            document.getElementById("XENON").innerText = data["XENON"];
+
+        if (data["EMERGENCY"] !== undefined) {
+            emergencyActive = data["EMERGENCY"];
+        }
     });
+
+    // мигание раз в секунду
+    setInterval(() => {
+        if (emergencyActive) {
+            blinkState = !blinkState;
+            emergencyImg.style.display = blinkState ? "block" : "none";
+        } else {
+            emergencyImg.style.display = "none";
+        }
+    }, 1000);
 </script>
 
 </body>
