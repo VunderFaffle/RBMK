@@ -57,7 +57,7 @@
 
     <div>HULL TEMP: <span id="HULL_TEMP">-</span></div>
     <div>CORE TEMP: <span id="CORE_TEMP">-</span></div>
-    <div>CONTROL ROD LEVEL: <span id="CONTROL_ROD_LEVEL">-</span></div>
+    <div>CONTROL ROD LEVEL: <span id="CONTROL_LEVEL">-</span></div>
     <div>REACTOR UPTIME: <span id="REACTOR_UPTIME">-</span></div>
     <div>WATER LEVEL: <span id="WATER_LEVEL">-</span></div>
     <div>XENON: <span id="XENON">-</span></div>
@@ -120,20 +120,20 @@
 `;
 
     socket.on("update", (data) => {
-        if (data["HULL TEMP"] !== undefined)
-            document.getElementById("HULL_TEMP").innerText = data["HULL TEMP"];
+        if (data["HULL_TEMP"] !== undefined)
+            document.getElementById("HULL_TEMP").innerText = data["HULL_TEMP"];
 
-        if (data["CORE TEMP"] !== undefined)
-            document.getElementById("CORE_TEMP").innerText = data["CORE TEMP"];
+        if (data["CORE_TEMP"] !== undefined)
+            document.getElementById("CORE_TEMP").innerText = data["CORE_TEMP"];
 
-        if (data["CONTROL ROD LEVEL"] !== undefined)
-            document.getElementById("CONTROL_ROD_LEVEL").innerText = data["CONTROL ROD LEVEL"];
+        if (data["CONTROL_LEVEL"] !== undefined)
+            document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL_LEVEL"];
 
-        if (data["REACTOR UPTIME"] !== undefined)
-            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR UPTIME"];
+        if (data["REACTOR_UPTIME"] !== undefined)
+            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR_UPTIME"];
 
-        if (data["WATER LEVEL"] !== undefined)
-            document.getElementById("WATER_LEVEL").innerText = data["WATER LEVEL"];
+        if (data["WATER_LEVEL"] !== undefined)
+            document.getElementById("WATER_LEVEL").innerText = data["WATER_LEVEL"];
 
         if (data["XENON"] !== undefined)
             document.getElementById("XENON").innerText = data["XENON"];
