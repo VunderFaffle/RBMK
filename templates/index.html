@@ -11,9 +11,10 @@
             margin: 0;
             display: flex;
             height: 100vh;
+            transition: background 0.2s, color 0.2s;
         }
 
-        a { color: #00FF00; }
+        a { color: inherit; }
 
         #data-panel {
             width: 50%;
@@ -35,6 +36,17 @@
             display: none;
             z-index: 2000;
         }
+
+        /* аварийный режим */
+        .emergency {
+            background: black;
+            color: red;
+        }
+
+        .emergency.flash {
+            background: red;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -45,14 +57,14 @@
 
     <div>HULL TEMP: <span id="HULL_TEMP">-</span></div>
     <div>CORE TEMP: <span id="CORE_TEMP">-</span></div>
-    <div>CONTROL ROD LEVEL: <span id="CONTROL_LEVEL">-</span></div>
+    <div>CONTROL ROD LEVEL: <span id="CONTROL_ROD_LEVEL">-</span></div>
     <div>REACTOR UPTIME: <span id="REACTOR_UPTIME">-</span></div>
     <div>WATER LEVEL: <span id="WATER_LEVEL">-</span></div>
     <div>XENON: <span id="XENON">-</span></div>
 </div>
 
 <div id="ascii-panel">
-<pre>
+<pre id="ascii">
  /$$$$$$$  /$$$$$$$  /$$      /$$ /$$   /$$       /$$                                               /$$
 | $$__  $$| $$__  $$| $$$    /$$$| $$  /$$/      |__/                                              | $$
 | $$  \ $$| $$  \ $$| $$$$  /$$$$| $$ /$$/        /$$  /$$$$$$$        /$$$$$$$  /$$$$$$   /$$$$$$ | $$
@@ -67,8 +79,7 @@
 </pre>
 </div>
 
-<!-- аварийная картинка -->
-<img id="emergency" src="/static/emergency.png" width="900" height="260">
+<img id="emergency" src="/static/emergency.png" width="450" height="130">
 
 <script>
     const socket = io();
@@ -76,23 +87,53 @@
     let emergencyActive = false;
     let blinkState = false;
 
+    const body = document.body;
     const emergencyImg = document.getElementById("emergency");
+    const ascii = document.getElementById("ascii");
+
+    // нормальный ASCII
+    const normalArt = `
+ /$$$$$$$  /$$$$$$$  /$$      /$$ /$$   /$$       /$$                                               /$$
+| $$__  $$| $$__  $$| $$$    /$$$| $$  /$$/      |__/                                              | $$
+| $$  \ $$| $$  \ $$| $$$$  /$$$$| $$ /$$/        /$$  /$$$$$$$        /$$$$$$$  /$$$$$$   /$$$$$$ | $$
+| $$$$$$$/| $$$$$$$ | $$ $$/$$ $$| $$$$$/        | $$ /$$_____/       /$$_____/ /$$__  $$ /$$__  $$| $$
+| $$__  $$| $$__  $$| $$  $$$| $$| $$  $$        | $$|  $$$$$$       | $$      | $$  \ $$| $$  \ $$| $$
+| $$  \ $$| $$  \ $$| $$\  $ | $$| $$\  $$       | $$ \____  $$      | $$      | $$  | $$| $$  | $$| $$
+| $$  | $$| $$$$$$$/| $$ \/  | $$| $$ \  $$      | $$ /$$$$$$$/      |  $$$$$$$|  $$$$$$/|  $$$$$$/| $$
+|__/  |__/|_______/ |__/     |__/|__/  \__/      |__/|_______/        \_______/ \______/  \______/ |__/
+                                                                                                       
+                                                                                                       
+                                                                                                       
+`;
+
+    // аварийный ASCII
+    const emergencyArt = `
+ (            *         )                                    
+ )\ )   (   (  `     ( /(                                    
+(()/( ( )\  )\))(    )\())  (        (  (                (   
+ /(_)))((_)((_)()\ |((_)\   )\  (    )\))(  (    (      ))\  
+(_)) ((_)_ (_()((_)|_ ((_) ((_) )\  ((_))\  )\   )\ )  /((_) 
+| _ \ | _ )|  \/  || |/ /   (_)((_)  (()(_)((_) _(_/( (_))   
+|   / | _ \| |\/| |  ' <    | |(_-< / _` |/ _ \| ' \))/ -_)  
+|_|_\ |___/|_|  |_| _|\_\   |_|/__/ \__, |\___/|_||_| \___|  
+                                    |___/                    
+`;
 
     socket.on("update", (data) => {
-        if (data["HULL_TEMP"] !== undefined)
-            document.getElementById("HULL_TEMP").innerText = data["HULL_TEMP"];
+        if (data["HULL TEMP"] !== undefined)
+            document.getElementById("HULL_TEMP").innerText = data["HULL TEMP"];
 
-        if (data["CORE_TEMP"] !== undefined)
-            document.getElementById("CORE_TEMP").innerText = data["CORE_TEMP"];
+        if (data["CORE TEMP"] !== undefined)
+            document.getElementById("CORE_TEMP").innerText = data["CORE TEMP"];
 
-        if (data["CONTROL_LEVEL"] !== undefined)
-            document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL_LEVEL"];
+        if (data["CONTROL ROD LEVEL"] !== undefined)
+            document.getElementById("CONTROL_ROD_LEVEL").innerText = data["CONTROL ROD LEVEL"];
 
-        if (data["REACTOR_UPTIME"] !== undefined)
-            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR_UPTIME"];
+        if (data["REACTOR UPTIME"] !== undefined)
+            document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR UPTIME"];
 
-        if (data["WATER_LEVEL"] !== undefined)
-            document.getElementById("WATER_LEVEL").innerText = data["WATER_LEVEL"];
+        if (data["WATER LEVEL"] !== undefined)
+            document.getElementById("WATER_LEVEL").innerText = data["WATER LEVEL"];
 
         if (data["XENON"] !== undefined)
             document.getElementById("XENON").innerText = data["XENON"];
@@ -102,13 +143,25 @@
         }
     });
 
-    // мигание раз в секунду
+    // мигание
     setInterval(() => {
         if (emergencyActive) {
             blinkState = !blinkState;
+
+            // фон + текст
+            body.classList.add("emergency");
+            body.classList.toggle("flash", blinkState);
+
+            // картинка
             emergencyImg.style.display = blinkState ? "block" : "none";
+
+            // ASCII
+            ascii.innerText = blinkState ? emergencyArt : normalArt;
+
         } else {
+            body.classList.remove("emergency", "flash");
             emergencyImg.style.display = "none";
+            ascii.innerText = normalArt;
         }
     }, 1000);
 </script>
