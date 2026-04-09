@@ -134,19 +134,19 @@ $$ |                                                                            
     const emergencyImg = document.getElementById("emergency");
 
     socket.on("update", (data) => {
-        if (data["HULL TEMP"] !== undefined)
+        if (data["HULL_TEMP"] !== undefined)
             document.getElementById("HULL_TEMP").innerText = data["HULL_TEMP"];
 
-        if (data["CORE TEMP"] !== undefined)
+        if (data["CORE_TEMP"] !== undefined)
             document.getElementById("CORE_TEMP").innerText = data["CORE_TEMP"];
 
-        if (data["CONTROL ROD LEVEL"] !== undefined)
+        if (data["CONTROL_LEVEL"] !== undefined)
             document.getElementById("CONTROL_LEVEL").innerText = data["CONTROL_LEVEL"];
 
-        if (data["REACTOR UPTIME"] !== undefined)
+        if (data["REACTOR_UPTIME"] !== undefined)
             document.getElementById("REACTOR_UPTIME").innerText = data["REACTOR_UPTIME"];
 
-        if (data["WATER LEVEL"] !== undefined)
+        if (data["WATER_LEVEL"] !== undefined)
             document.getElementById("WATER_LEVEL").innerText = data["WATER_LEVEL"];
 
         if (data["XENON"] !== undefined)
